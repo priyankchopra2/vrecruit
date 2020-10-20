@@ -21,7 +21,11 @@
 	title
 	<form:input  path="title" value="${jobApp.title}"/>  <br/>
 	category
-	<form:input path="category" value="${jobApp.category}" />
+	<form:select path="category" value="${jobApp.category}">
+		<c:forEach items="${categories}" var="c">
+			<option><c:out value="${c}" /></option>
+		</c:forEach>
+	</form:select>
 	<br/>
 	<br/>
 	position_type

@@ -10,7 +10,7 @@
 	
 	<div class="col">
 		<h1>Click below to View All Job Applications</h1>
-		<a href="/app/jobApp/viewAll">See All Job Applications</a>
+		<a href="/app/jobApp/candidateJobAppList">See All Job Applications</a>
 	</div>
 	
 

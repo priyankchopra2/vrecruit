@@ -5,8 +5,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import com.sun.istack.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
+
 
 @Entity
 public class JobApplication {
@@ -15,6 +18,8 @@ public class JobApplication {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int jid;
 	
+	
+	@Size(min=1,message="Title can't be empty")
 	private String title;
 	
 	private String category;

@@ -13,7 +13,7 @@
 <body>
 <a href="/app">Home</a>
 <a href="/app/dashboard">Dasboard</a>
-<h1>All Interviewer List</h1>
+<h1>All JobApplication List</h1>
 <br/><br/>
 
  <table border="1">
@@ -26,19 +26,13 @@
         <td>position_type: <c:out value="${i.position_type}"/></td> 
         <td>job_description: <c:out value="${i.job_description}"/></td> 
         <td>rounds: <c:out value="${i.rounds}"/></td>
-        <td>interviewer: <c:out value="${i.interviewer.id}"/></td>
         <td>
-	    	<form action="edit" method="get" style="display:inline;">
+        	<!-- It will give job id as requestparameter-->
+	    	<form action="apply" method="get" style="display:inline;">
 	    		<input type="hidden" name="id" value="${i.jid}" >
-	    		<input type="submit" value="Edit">
+	    		<input type="submit" value="apply">
 	    	</form>
     	</td>
-    	<td>
-	    	<form action="delete" method="get">
-	    		<input type="hidden" name="id" value="${i.jid}" >
-	    		<input type="submit" value="Delete">
-	    	</form>
-    	</td> 
     	</tr>
  </c:forEach>
 </table>
