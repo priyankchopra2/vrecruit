@@ -33,6 +33,14 @@
 	    		<input type="submit" value="apply">
 	    	</form>
     	</td>
+    	<td>
+        	<!-- It will give job id as requestparameter
+	    	<form action="/jobApp/viewCandidates" method="get" style="display:inline;">
+	    		<input type="hidden" name="id" value="${i.jid}" >
+	    		<input type="submit" value="view Candidates">
+	    	</form>
+	    	-->
+    	</td>
     	</tr>
  </c:forEach>
 </table>

@@ -13,8 +13,10 @@
 		<a href="/app/jobApp/candidateJobAppList">See All Job Applications</a>
 	</div>
 	
-
+	<a href="/app/userregistration">Register</a>
+<a href="/app/loginform">Login</a>
 </div>
+
 
 
 </body>

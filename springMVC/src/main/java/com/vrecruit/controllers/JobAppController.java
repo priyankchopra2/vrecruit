@@ -2,24 +2,35 @@ package com.vrecruit.controllers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.dao.InterviewerDAO;
 import com.dao.JobAppDAO;
+import com.dao.JobProcessDao;
+import com.dao.JobProcessDaoImpl;
 import com.entities.Interviewer;
 import com.entities.JobApplication;
+import com.entities.JobProcessDetails;
 
 @RequestMapping("/jobApp")
 @Controller
@@ -29,9 +40,14 @@ public class JobAppController {
 	JobAppDAO jobAppDao;
 
 	@Autowired
+	JobProcessDao jobProcessDaoImpl;
+
+	@Autowired
 	InterviewerDAO interviewerDao;
 
 	List<JobApplication> lst;
+
+	List<JobProcessDetails> jobProcessDetailsList;
 
 	List<String> categories = Arrays.asList("HR", "IT", "FINANCE");
 
@@ -50,22 +66,22 @@ public class JobAppController {
 		HttpSession session = request.getSession();
 		int id = (Integer) session.getAttribute("interviewerId");
 //		|| categories.contains(jobApp.getCategory())
-		  if (br.hasErrors() ) {  
-				m.setViewName("createJobApplication");
-	        }  
-	        else {  
-	        	jobApp.setInterviewer(interviewerDao.findById(id));
-	        	
-				m.setViewName("JobApplicationList");
-		//    	Setting object from form to db
-				jobAppDao.save(jobApp);
-		
-		//    	Getting list of interviewer from database
-				lst = jobAppDao.getAll();
-		
-				m.addObject("lst", lst);
-	        }  
-		
+		if (br.hasErrors()) {
+			System.out.println(br.toString());
+			m.setViewName("createJobApplication");
+		} else {
+			jobApp.setInterviewer(interviewerDao.findById(id));
+
+			m.setViewName("JobApplicationList");
+			// Setting object from form to db
+			jobAppDao.save(jobApp);
+
+			// Getting list of interviewer from database
+			lst = jobAppDao.getAll();
+
+			m.addObject("lst", lst);
+		}
+
 		return m;
 	}
 
@@ -147,10 +163,7 @@ public class JobAppController {
 		m.addObject("lst", lst);
 		return m;
 	}
-	
-	
-	
-	
+
 //	CANDIDATE PART
 	@RequestMapping(value = "/candidateJobAppList", method = RequestMethod.GET)
 	public ModelAndView candidateJobAppList() {
@@ -164,6 +177,76 @@ public class JobAppController {
 		m.addObject("lst", lst);
 
 		return m;
+	}
+
+	// by priyank
+	// to get all job process details by passing job Application id
+	@RequestMapping(value = "/viewCandidates")
+	public ModelAndView seeCandidateJobProcess(@RequestParam("id") int id, HttpServletRequest request) {
+		ModelAndView m = new ModelAndView();
+
+		m.setViewName("candidatesList");
+		jobProcessDetailsList = jobProcessDaoImpl.getCandidatesJobProcess(id);
+
+		m.addObject("jobAppName", jobProcessDetailsList.get(0).getJobApplication().getTitle());
+		m.addObject("lst", jobProcessDetailsList);
+
+		return m;
+	}
+
+	@RequestMapping(value = "/viewCandidateJobProfile")
+	public ModelAndView viewCandidateJobProfile(@RequestParam("id") int id, HttpServletRequest request) {
+		ModelAndView m = new ModelAndView();
+
+		m.setViewName("SingleCandidateDetails");
+
+		JobProcessDetails CandidateJobProcessDetails = null;
+
+		for (JobProcessDetails j : jobProcessDetailsList) {
+			if (j.getJobid() == id) {
+				CandidateJobProcessDetails = j;
+			}
+		}
+
+		m.addObject("candidateDetails", CandidateJobProcessDetails);
+		return m;
+	}
+	
+	@RequestMapping(value = "/updateCandidateJobProcess")
+	public ModelAndView updateCandidateJobProcess(@ModelAttribute("candidateDetails") JobProcessDetails candidateDetails, BindingResult bindingResult) {
+		ModelAndView m = new ModelAndView();
+
+		m.setViewName("candidatesList");
+		System.out.println(candidateDetails);
+		
+		
+		candidateDetails.setResume(jobProcessDaoImpl.findById(candidateDetails.getJobid()).getResume());
+		
+		// update function will return the updated list
+		jobProcessDetailsList = jobProcessDaoImpl.update(candidateDetails);
+
+		m.addObject("lst", jobProcessDetailsList);
+
+		return m;
+	}
+	
+
+	@RequestMapping(value = "/download/{id}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable("id") int id, HttpServletRequest request) {
+		JobProcessDetails CandidateJobProcessDetails = null;
+
+		for (JobProcessDetails j : jobProcessDetailsList) {
+			if (j.getJobid() == id) {
+				CandidateJobProcessDetails = j;
+			}
+		}
+		
+	 	CommonsMultipartFile resume= CandidateJobProcessDetails.getResume();
+		
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(resume.getContentType()))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + resume.getOriginalFilename())
+				.body(new ByteArrayResource(resume.getBytes()));
+
 	}
 
 }

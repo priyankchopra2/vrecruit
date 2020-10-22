@@ -31,7 +31,6 @@ public class JobApplication {
 	private int rounds;
 	
 	@ManyToOne
-	@NotNull
 	private Interviewer interviewer;
 
 	public int getJid() {
