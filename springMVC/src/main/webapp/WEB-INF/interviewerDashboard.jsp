@@ -1,38 +1,31 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="ISO-8859-1"
-    isELIgnored="false"
-    %>
-    <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>  
-    <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Dashboard</title>
+<%@ include file="header.jsp"%>
 
-</head>
-<body>
+<div class="container-fluid idash center">
+	<h1>Interviewer Dashboard</h1>
 
-<h1>This is Interviewer Dashboard</h1>
 
-your id->
- ${id} 
-
-<h2>Welcome ${name} </h2> 
-
-<ul>
-	<li>
-		Create Job Applications: <a href="jobApp/create">Create job Application</a>
-	</li>
-	<li>
-		View/Edit Job Applications Created By You: <a href="jobApp/view">Create job Application</a>
-	</li>
-	<li>
-		View/Edit All Job Applications: <a href="jobApp/viewAll">Create job Application</a>
-	</li>
-	<li>see the designation if it is HR he can have final select candidate option and can see all the job applications</li>
-</ul>
-
+	<div class="center">
+		<h3>Welcome <%= session.getAttribute("interviewerName") %> </h3>
+		
+		<br/>
+		<h5>
+			Here you can create new job applications, see all job applications or
+			which are created by you and see candidates and give them marks <br />
+		</h5>
+		<br/>
+		<br/>
+		<ul>
+			<li><a class="btn btn-primary" href="jobApp/create">Create
+					job Application</a></li>
+			<li><a class="btn btn-primary" href="jobApp/view">View/Edit
+					Job Applications Created By You</a></li>
+			<li><a class="btn btn-primary" href="jobApp/viewAll">View/Edit
+					All Job Applications: </a></li>
+			<!-- <li>see the designation if it is HR he can have final select
+				candidate option and can see all the job applications</li> -->
+		</ul>
+	</div>
+</div>
 
 </body>
 </html>

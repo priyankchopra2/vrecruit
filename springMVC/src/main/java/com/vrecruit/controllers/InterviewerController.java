@@ -79,6 +79,14 @@ public class InterviewerController {
 		return m;
 	}
 	
+	@RequestMapping(value = "/ilogout", method = RequestMethod.GET)
+	public ModelAndView logout(HttpServletRequest request) {
+		ModelAndView m = new ModelAndView();
+		HttpSession session = request.getSession();
+		session.invalidate();
+		m.setViewName("login");
+		return m;
+	}
 
 	@RequestMapping(value = "/loginAction", method = RequestMethod.POST)
 	public ModelAndView loginAction(@RequestParam String email,@RequestParam String password,HttpServletRequest request) {
@@ -97,6 +105,7 @@ public class InterviewerController {
 		if(res.getPassword().equals(password)) {
 			HttpSession session = request.getSession();
 			session.setAttribute("interviewerId", res.getId());
+			session.setAttribute("interviewerName", res.getName());
 			m.addObject("id",res.getId());
 			m.addObject("name",res.getName());
 			m.setViewName("interviewerDashboard");
@@ -105,10 +114,6 @@ public class InterviewerController {
 			m.setViewName("login");
 		}
 		
-		
-
-		
-
 		m.addObject("lst", lst);
 
 		return m;

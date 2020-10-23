@@ -1,20 +1,40 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<html>
-<body>
-<div class="row">
+
+<%@ include file = "WEB-INF/header.jsp" %>
+<div class="row container">
 
 	<div class="col">
-		<h1>Click below to Create Interviewer</h1>
-		<a href="/app/login">Login as Interviewer</a>
+		<h1>Login as Interviewer</h1>
+		<a href="/app/login">
+		<button class="btn btn-primary">Login as Interviewer</button>
+		</a>
 	</div>
 	
+	<!-- 
 	<div class="col">
 		<h1>Click below to View All Job Applications</h1>
 		<a href="/app/jobApp/candidateJobAppList">See All Job Applications</a>
 	</div>
 	
-	<a href="/app/userregistration">Register</a>
-<a href="/app/loginform">Login</a>
+	<div class="col">
+		<h1>Register/Login as Candidate</h1>
+		<a href="/app/userregistration">Candidate Registeration</a>&nbsp&nbsp&nbsp
+		<a href="/app/loginform">Login as Candidate</a>
+	</div>
+	 -->
+	<div class="col">
+		<h1>Register/Login as Candidate</h1>
+		<a href="/app/userregistration">
+		<button class="btn btn-danger">Candidate Registeration</button>
+		</a>
+		
+		<a href="/app/loginform">
+		<button class="btn btn-primary">Login as Candidate</button>
+		</a>
+	</div>
+	
+	
+	
+
 </div>
 
 

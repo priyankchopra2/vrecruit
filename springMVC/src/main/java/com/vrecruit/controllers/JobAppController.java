@@ -1,5 +1,6 @@
 package com.vrecruit.controllers;
 
+import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,9 +67,14 @@ public class JobAppController {
 		ModelAndView m = new ModelAndView();
 		HttpSession session = request.getSession();
 		int id = (Integer) session.getAttribute("interviewerId");
-//		|| categories.contains(jobApp.getCategory())
-		if (br.hasErrors()) {
+		System.out.println(categories.contains(jobApp.getCategory()));
+		if (br.hasErrors() || ! categories.contains(jobApp.getCategory())) {
+			if(!categories.contains(jobApp.getCategory())) {
+				m.addObject("CategoryError", "Category not Selected"); 
+			}
 			System.out.println(br.toString());
+			m.addObject("categories", categories);
+			
 			m.setViewName("createJobApplication");
 		} else {
 			jobApp.setInterviewer(interviewerDao.findById(id));
@@ -224,7 +231,7 @@ public class JobAppController {
 		
 		// update function will return the updated list
 		jobProcessDetailsList = jobProcessDaoImpl.update(candidateDetails);
-
+		
 		m.addObject("lst", jobProcessDetailsList);
 
 		return m;

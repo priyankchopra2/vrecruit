@@ -1,54 +1,48 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"
-    isELIgnored="false"
-    %>
-     <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>  
-    <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-    <%@ taglib prefix="c" 
-       uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Edit</title>
-</head>
-<body>
-<a href="/app/">Home</a>
+<%@ include file="header.jsp"%>
 
+<div class="container-fluid center">
+	
+		<h1>Candidate Report</h1>
+		<br/>
 
-<form:form action="/app/jobApp/updateCandidateJobProcess" method="post" modelAttribute="candidateDetails" > 
-	Name: <b>${candidateDetails.user.getUsername()}</b>
-	<form:input  path="jobid" value="${candidateDetails.jobid}" /> 
-	<form:input  path="user.id" value="${candidateDetails.user.id}" />  
-	<form:input  path="jobApplication.jid" value="${candidateDetails.jobApplication.jid}"/>  
+		<form:form action="/app/jobApp/updateCandidateJobProcess"
+			method="post" modelAttribute="candidateDetails"> 
+			
+		Name: <b>${candidateDetails.user.getUsername()}</b>
+			<form:hidden path="jobid" value="${candidateDetails.jobid}" readonly="true" />
+			
+			<form:hidden path="user.id" value="${candidateDetails.user.id}" readonly="true"/>
+	
+			<form:hidden path="jobApplication.jid"
+				value="${candidateDetails.jobApplication.jid}" readonly="true"/>  
+				<br/><br/>
 	
 	Marks
-	<form:input  path="marks" value="${candidateDetails.marks}"/>  <br/>
-	category
-	<br/>
-	<br/>
+	<form:input path="marks" value="${candidateDetails.marks}" />
+			<br /><br/>
+	
 	click to download Resume
 	<a href="/app/jobApp/download/${candidateDetails.jobid}">
-			${candidateDetails.resume.getOriginalFilename()}
-	</a>
-	<br/>
+				${candidateDetails.resume.getOriginalFilename()} </a>
+			<br /><br/>
 	
 	
 	Selected
 	
-	<form:checkbox path="selected" value="${candidateDetails.selected}"/>
-	<br/>
-	current Round of candidate
-	<form:input path="currentround" value="${candidateDetails.currentround}" />
-	<br/>
-	interviewer
-	<br/>
-	<input type="submit" value="Submit" />
+	<form:checkbox path="selected" value="${candidateDetails.selected}" />
+			<br /><br/>
+	Current Round of candidate
+	<form:input path="currentround"
+				value="${candidateDetails.currentround}" />
+			<br /><br/>
 	
-	
-	
-</form:form>
+	<br /><br/>
+			<input class="btn btn-primary" type="submit" value="Submit" />
+  
 
+
+		</form:form>
+	</div>
 
 </body>
 </html>
