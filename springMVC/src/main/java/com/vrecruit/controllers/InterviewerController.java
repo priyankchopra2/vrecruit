@@ -1,26 +1,35 @@
 package com.vrecruit.controllers;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.dao.InterviewerDAO;
 import com.entities.Interviewer;
+import com.pojo.InterviewerPOJO;
 
 @Controller
 public class InterviewerController {
-
+	
+	private static final Logger logger = Logger.getLogger(InterviewerController.class);
+	
+	private static final String LOGIN = "login";
+	
 	@Autowired
 	InterviewerDAO interviewerDao;
 
@@ -33,13 +42,17 @@ public class InterviewerController {
 		return m;
 	}
 
-	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public ModelAndView add(@ModelAttribute("interviewer") Interviewer obj, BindingResult br) {
-		ModelAndView m = new ModelAndView();
-
-		m.setViewName("InterviewerList");
+	@PostMapping(value = "/add")
+	public ModelAndView add(@ModelAttribute("interviewer") InterviewerPOJO obj, BindingResult br) {
+		ModelAndView m = new ModelAndView();  
+    
+		m.setViewName("InterviewerList");  
 //    	Setting object from form to db
-		interviewerDao.save(obj);
+		
+		Interviewer a = new Interviewer();  
+		BeanUtils.copyProperties(obj,a);
+		  
+		interviewerDao.save(a);
 
 //    	Getting list of interviewer from database
 		lst = interviewerDao.getAll();
@@ -49,14 +62,15 @@ public class InterviewerController {
 		return m;
 	}
 
-	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+	@GetMapping(value = "/dashboard")
 	public ModelAndView show(HttpServletRequest request) {
 		ModelAndView m = new ModelAndView();
 		HttpSession session = request.getSession();
 		
 		if(session.getAttribute("interviewerId")==null) {
 			//can throw exception here or return to home page
-			m.setViewName("login");
+			
+			m.setViewName(LOGIN);
 		}
 		else {
 			m.setViewName("interviewerDashboard");
@@ -65,40 +79,41 @@ public class InterviewerController {
 		return m;
 	}
 	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@GetMapping(value = "/login")
 	public ModelAndView login() {
 		ModelAndView m = new ModelAndView();
 
-		m.setViewName("login");
+		m.setViewName(LOGIN);
 
 //    	Getting list of interviewer from database
 		lst = interviewerDao.getAll();
 
-		lst.stream().forEach(System.out::println);
+
 
 		return m;
 	}
 	
-	@RequestMapping(value = "/ilogout", method = RequestMethod.GET)
+	@GetMapping(value = "/ilogout")
 	public ModelAndView logout(HttpServletRequest request) {
 		ModelAndView m = new ModelAndView();
 		HttpSession session = request.getSession();
 		session.invalidate();
-		m.setViewName("login");
+		m.setViewName(LOGIN);
 		return m;
 	}
 
-	@RequestMapping(value = "/loginAction", method = RequestMethod.POST)
+	@PostMapping(value = "/loginAction")
 	public ModelAndView loginAction(@RequestParam String email,@RequestParam String password,HttpServletRequest request) {
 		ModelAndView m = new ModelAndView();
 
 		lst = interviewerDao.getAll();
 		Interviewer res=new Interviewer();
-		List s= lst.stream().filter(e->e.getEmail().equals(email)).collect(Collectors.toList());
+		try {
+		List<Interviewer> s= lst.stream().filter(e->e.getEmail().equals(email)).collect(Collectors.toList());
 		
-		for(Object o:s) {
-			System.out.println(o);
-			res=(Interviewer) o;
+		for(Interviewer o:s) {
+			logger.info(o);
+			res= o;
 		}
 		
 		
@@ -111,12 +126,23 @@ public class InterviewerController {
 			m.setViewName("interviewerDashboard");
 		}
 		else {
-			m.setViewName("login");
+			m.setViewName(LOGIN);
 		}
 		
 		m.addObject("lst", lst);
-
+		}
+		catch(NullPointerException e) {
+			throw new NullPointerException("USER DOES NOT EXIST...");
+		}
 		return m;
+	}
+	@ExceptionHandler({ NullPointerException.class })
+	public ModelAndView handleIOException(Exception ex) {
+		ModelAndView model = new ModelAndView("jobAppDeleteError");
+
+		model.addObject("exception", ex.getMessage());
+
+		return model;
 	}
 
 }

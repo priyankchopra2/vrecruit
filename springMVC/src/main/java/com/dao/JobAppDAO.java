@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 
-import com.entities.Interviewer;
 import com.entities.JobApplication;
 
 @Component
@@ -19,29 +18,28 @@ public class JobAppDAO {
 	
 	@Transactional
 	public int save(JobApplication obj) {
-		Integer i=(Integer) this.hibernateTemplate.save(obj);
-		return i;
+		return (Integer) this.hibernateTemplate.save(obj);
+
 	}
 	
 	public List<JobApplication> getAll(){
 		
-		List<JobApplication> jobApp = this.hibernateTemplate.loadAll(JobApplication.class);
-		return jobApp;
+		return this.hibernateTemplate.loadAll(JobApplication.class);
+
 	}
 	
 	public List<JobApplication> findByInterviewerId(int id){	
-		List<JobApplication> jobApp = (List<JobApplication>) this.hibernateTemplate.
+		return (List<JobApplication>) this.hibernateTemplate.
 				find("from JobApplication j where j.interviewer.id = "+id);
-		
-		return jobApp;
+
 	}
     		
 	
 	@Transactional
 	public List<JobApplication> update(JobApplication obj){
 		 this.hibernateTemplate.saveOrUpdate(obj); 
-		 List<JobApplication> jobApp = this.hibernateTemplate.loadAll(JobApplication.class);
-		 return jobApp;
+		 return  this.hibernateTemplate.loadAll(JobApplication.class);
+		 
 	}
 	
 	@Transactional

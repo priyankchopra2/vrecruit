@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.sun.istack.Nullable;
-
 @Entity
 public class Interviewer {
 	
@@ -27,11 +25,10 @@ public class Interviewer {
 	
 	private String designation;
 	
-	private int phone_no;
+	private int phone;
 	
 	@OneToMany(mappedBy = "interviewer",fetch = FetchType.EAGER)
-	@Nullable
-	private  List<JobApplication> job_application=new ArrayList<JobApplication>();
+	private  List<JobApplication> jobApplication=new ArrayList<>();
 
 	public int getId() {
 		return id;
@@ -73,26 +70,26 @@ public class Interviewer {
 		this.designation = designation;
 	}
 
-	public int getPhone_no() {
-		return phone_no;
+	public int getPhone() {
+		return phone;
 	}
 
-	public void setPhone_no(int phone_no) {
-		this.phone_no = phone_no;
+	public void setPhone(int phone) {
+		this.phone = phone;
 	}
 
-	public List<JobApplication> getJob_application() {
-		return job_application;
+	public List<JobApplication> getjobApplication() {
+		return jobApplication;
 	}
 
-	public void setJob_application(List<JobApplication> job_application) {
-		this.job_application = job_application;
+	public void setjobApplication(List<JobApplication> jobApplication) {
+		this.jobApplication = jobApplication;
 	}
 
 	@Override
 	public String toString() {
 		return "Interviewer [id=" + id + ", name=" + name + ", password=" + password + ", email=" + email
-				+ ", designation=" + designation + ", phone_no=" + phone_no + "]";
+				+ ", designation=" + designation + ", phone_no=" + phone + "]";
 	}
 
 	

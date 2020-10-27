@@ -21,8 +21,7 @@
 					Job Applications Created By You</a></li>
 			<li><a class="btn btn-primary" href="jobApp/viewAll">View/Edit
 					All Job Applications: </a></li>
-			<!-- <li>see the designation if it is HR he can have final select
-				candidate option and can see all the job applications</li> -->
+			
 		</ul>
 	</div>
 </div>

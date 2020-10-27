@@ -1,48 +1,37 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"
-    isELIgnored="false"
-    %>
-    <%@ taglib prefix="c" 
-       uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>All Job Applications</title>
-</head>
-<body>
-<a href="/app">Home</a>
-<a href="/app/dashboard">Dasboard</a>
-<h1>All JobApplication List</h1>
-<br/><br/>
+<%@ include file="sidebar.jsp"%>
+<%@ include file="header.jsp"%>
 
- <table border="1">
- <c:forEach items="${lst}" var="i">
- <br/>
+<div class="container-fluid  center">
+
+
+	<div class="center ">
  
- 	    <tr>
-        <th><b>title: <c:out value="${i.title}"/> </b></th>
-        <td>category: <c:out value="${i.category}"/></td>  
-        <td>position_type: <c:out value="${i.position_type}"/></td> 
-        <td>job_description: <c:out value="${i.job_description}"/></td> 
-        <td>rounds: <c:out value="${i.rounds}"/></td>
-        <td>
-        	<!-- It will give job id as requestparameter-->
-	    	<form action="apply" method="get" style="display:inline;">
-	    		<input type="hidden" name="id" value="${i.jid}" >
-	    		<input type="submit" value="apply">
-	    	</form>
-    	</td>
-    	<td>
-        	<!-- It will give job id as requestparameter
-	    	<form action="/jobApp/viewCandidates" method="get" style="display:inline;">
-	    		<input type="hidden" name="id" value="${i.jid}" >
-	    		<input type="submit" value="view Candidates">
-	    	</form>
-	    	-->
-    	</td>
-    	</tr>
- </c:forEach>
-</table>
+
+		<table class="tble" id="canjobListTable" border="1" style="margin-left:150px;font-size:20px">
+			<caption></caption>  
+
+			<c:forEach items="${lst}" var="i">  
+				<br />
+				<tr>
+					<th id="canjobListTitle"><strong>Title: <c:out value="${i.title}" />
+					</strong></th>
+					<td>Category: <c:out value="${i.category}" /></td>
+					<td>Position Type: <c:out value="${i.positionType}" /></td>
+					<td>Job Description: <c:out value="${i.jobDescription}" /></td>
+					<td>Rounds: <c:out value="${i.rounds}" /></td>
+					<td>
+						<!-- It will give job id as requestparameter-->
+						<form action="apply" method="get" style="display: inline;">
+							<input type="hidden" name="id" value="${i.jid}"> 
+							<input class="btn btn-primary"
+  								type="submit" value="apply">
+						</form>
+					</td>
+					<td></td>
+				</tr>
+			</c:forEach>
+		</table>
+	</div>
+</div>
 </body>
 </html>

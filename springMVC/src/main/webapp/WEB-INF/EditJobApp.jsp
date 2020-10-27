@@ -23,19 +23,23 @@
 			<br />
 			<br />
 	Position Type
-	<form:input path="position_type" value="${jobApp.position_type}" />
+	<form:select path="positionType" value="${jobApp.positionType}">
+				<c:forEach items="${positionType}" var="c">
+					<option><c:out value="${c}" /></option>
+				</c:forEach>
+			</form:select>
 			<br />
-			<br />
+			<br />  
 	Job Description
-	<form:input path="job_description" value="${jobApp.job_description}" />
+	<form:input path="jobDescription" value="${jobApp.jobDescription}" />
 			<br />
 			<br />
 	Rounds
 	<form:input path="rounds" value="${jobApp.rounds}" />
 			<br />
 			<br />
-	Interviewer
-	<form:input path="interviewer.id" value="${jobApp.interviewer.id}"
+
+			<form:hidden path="interviewer.id" value="${jobApp.interviewer.id}"
 				readonly="true" />
 			<br />
 			<br />

@@ -1,21 +1,18 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ include file="sidebar.jsp"%>
+<%@ include file="header.jsp"%>
 
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"  isELIgnored="false" %>
+<div class="container-fluid  center">
+	
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
+	<div class="center">
+	
+ 
+
      <form:form id="regForm"  modelAttribute="job" action="uploadresume" enctype="multipart/form-data"
-		method="post">
-  		
-		<table >
+		method="post" >
+  		<h3>     upload your resume in text format </h3>
+		<table align="center" >
 		
 		<tr>
 				<td><form:label path="resume">resume</form:label></td>
@@ -24,12 +21,13 @@
 		
 		
 			
-		<td><form:button id="upload" name="upload">upload</form:button></td>
+		<td><form:button  class="btn btn-primary" sid="upload" name="upload">upload</form:button></td>
 		
 					
 		
 		</table>
 	</form:form>
-	
+	</div>
+	</div>
 </body>
 </html>

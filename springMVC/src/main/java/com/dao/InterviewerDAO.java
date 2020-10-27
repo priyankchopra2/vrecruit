@@ -16,33 +16,29 @@ public class InterviewerDAO {
 
 	@Autowired
 	HibernateTemplate hibernateTemplate;
-	
+
 	@Transactional
 	public int save(Interviewer obj) {
-		Integer i=(Integer) this.hibernateTemplate.save(obj);
-		return i;
+		return (Integer) this.hibernateTemplate.save(obj);
 	}
-	
-	public List<Interviewer> getAll(){
-		
-		List<Interviewer> interviewers = this.hibernateTemplate.loadAll(Interviewer.class);
-		return interviewers;
+
+	public List<Interviewer> getAll() {
+
+		return this.hibernateTemplate.loadAll(Interviewer.class);
+
 	}
-	
-	public Interviewer findById(int id){
-		
+
+	public Interviewer findById(int id) {
+
 		List<Interviewer> interviewers = this.hibernateTemplate.loadAll(Interviewer.class);
-		
-		Interviewer res=new Interviewer();
-		List s= interviewers.stream().filter(e->e.getId()==id).collect(Collectors.toList());
-		
-		for(Object o:s) {
-			System.out.println(o);
-			res=(Interviewer) o;
+
+		Interviewer res = new Interviewer();
+		List<Interviewer> s = interviewers.stream().filter(e -> e.getId() == id).collect(Collectors.toList());
+
+		for (Interviewer o : s) {
+			res = o;
 		}
 		return res;
 	}
-	
-	
-	
+
 }

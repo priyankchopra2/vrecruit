@@ -1,34 +1,30 @@
- <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ include file="header.jsp"%>
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
+<div class="container-fluid idash center">
+	
 
+	<div class="center">
+	
 
 <form:form id="login"  modelAttribute="user" action="login"
 		method="post">
 
 <table align="center">
+
 			<tr>
 				<td><form:label path="email">Email</form:label></td>
-				<td><form:input  path="email" name="email" id="email" /></td>
+				<td><form:input  path="email" name="email" id="email" placeholder="aaa@gmail.com"/></td>
 			</tr>
 			
 			<tr>
 				<td><form:label path="password">Password</form:label></td>
 				<td><form:password  path="password" name="password"
-						id="password" /></td>
+						id="password" placeholder="enter password"/></td>
 			</tr>
 			<tr>
 			
 				<tr>
-				<td><form:button id="login" name="login">Login</form:button></td>
+				<td><form:button class="btn btn-primary" id="login" name="login">Login</form:button></td>
 			</tr>
 			<tr></tr>
 			<tr>
@@ -37,6 +33,7 @@
 			</tr>
 		</table>
 	</form:form>
-
+</div>
+</div>
 </body>
 </html>

@@ -1,19 +1,14 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ include file="header.jsp"%>
+<%@ include file="sidebar.jsp"%>
 
+<div class="container-fluid  center">
+	
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"  isELIgnored="false" %>
-    <!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-  
+	<div class="center">
+	
+ 
 		
-<table>
+<table align="center">
 		<tr>
 		<td> User Name:</td>
 			<td> ${usersession.username}</td>
@@ -37,15 +32,10 @@
 			
 		</tr>
 		
-		<tr>
-			<td><form action="editprofile">
-			<input type="submit" value="edit profile">
-			</form></td>
-		</tr>
 		
-					<form action="userpage">
-			<input type="submit" value="Home">
-			</form>
 	</table>
+		
+	</div>
+</div>
 </body>
 </html>

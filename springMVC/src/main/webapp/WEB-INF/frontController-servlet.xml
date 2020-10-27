@@ -33,7 +33,7 @@
 		name="dataSource">
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/test" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test2" />
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 	</bean>
@@ -81,7 +81,11 @@
 		name="transactionManager">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
-
+<bean id="messageSource"
+        class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+ 
+        <property name="basename" value="classpath:messages" />
+        </bean>
 
 	<bean name="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
 	

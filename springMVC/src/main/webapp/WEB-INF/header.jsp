@@ -4,7 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html>
+<!DOCTYPE>
+<html lang="en">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -32,6 +33,11 @@ table {
 #jobListTable tr td{
 	padding:7px;
 	text-align:center; 
+}
+#canjobListTable
+{
+
+font-size: 15px;
 }
 
 .tble tr td{
@@ -67,10 +73,10 @@ table {
 					<%
 							}
 						%>
-					<li class="nav-item"><a class="nav-link" href="#">Pricing</a>
+					<li class="nav-item"><a class="nav-link" href="#"></a>
 					</li>
 				</ul>
-				<span class="navbar-text"> Navbar text with an inline element
+				<span class="navbar-text"> 
 				</span>
 			</div>
 		</nav>

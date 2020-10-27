@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,14 +24,18 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.entities.User;
+import com.exception.UserExistsException;
+import com.exception.UserLoginException;
 import com.service.UserService;
 
+import org.apache.log4j.Logger;
 
 
 @Controller
 @SessionAttributes("usersession")
 public class UserController {
-
+	 private static final Logger logger = Logger.getLogger(UserController.class);
+		
 	@Autowired
 	private UserService userService;
 
@@ -49,7 +54,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/saveuser", method = RequestMethod.POST)
-	public ModelAndView createUser(@Valid @ModelAttribute("user") User user, BindingResult result) throws Exception {
+	public ModelAndView createUser(@Valid @ModelAttribute("user") User user, BindingResult result,HttpServletRequest request) throws Exception {
 		ModelAndView mav = new ModelAndView();
 
 		if (result.hasErrors()) {
@@ -58,20 +63,31 @@ public class UserController {
 			// form validation error
 			return mav;
 		}
-		mav.setViewName("home");
+		mav.setViewName("userpage");
 		if(userService.checkuser(user.getEmail()))
 		{
 			  userService.saveCustomer(user);
 			  mav.addObject("user", user);
+			  mav.addObject("usersession", user);
+			  HttpSession session = request.getSession();
+			   session.setAttribute("id",user.getId());
+			
 		    	
 		}
 		else
 		{
-			throw new Exception("User exists..");
+			throw new UserExistsException("User exists....");
 		}
      	
    	return mav;
 
+	}
+	@ExceptionHandler({UserExistsException.class})
+	   public ModelAndView handleException(UserExistsException e) {
+		ModelAndView mav=new ModelAndView();
+		mav.setViewName("usererror");
+		mav.addObject("errormsg",e.getUserException());
+	      return mav;
 	}
 
 	@RequestMapping(value = "/userregistration", method = RequestMethod.GET)
@@ -105,7 +121,7 @@ public class UserController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 
-	public ModelAndView authenticate(@ModelAttribute("user") User user,HttpServletRequest request) throws Exception {
+	public ModelAndView authenticate(@ModelAttribute("user") User user,HttpServletRequest request) throws Exception  {
 		String email = user.getEmail();
 		String password = user.getPassword();
 		User users = userService.validate(email, password);
@@ -115,14 +131,22 @@ public class UserController {
 			mav.addObject("usersession", users);
 			 HttpSession session = request.getSession();
 			   session.setAttribute("id",users.getId());
-			  
+			   logger.info("user login successful!");
+				
 				return mav;
 
 		} else {
-			throw new Exception("Login not successful..");
+			throw new UserLoginException("Login not successful..");
 		}
+		//return null;
 	}
-
+	@ExceptionHandler({UserLoginException.class})
+	   public ModelAndView handleException(UserLoginException e) {
+		ModelAndView mav=new ModelAndView();
+		mav.setViewName("usererror");
+		mav.addObject("errormsg",e.getUserException());
+	      return mav;
+	}
 	@RequestMapping(value = "/viewprofile")
 	public ModelAndView viewprofile(@ModelAttribute("usersession") User user) {
 		ModelAndView mav = new ModelAndView("profile");
@@ -137,18 +161,25 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/updateuser", method = RequestMethod.POST)
-	public ModelAndView updateUser(@Valid @ModelAttribute("usersession") User user, BindingResult result) {
+	public ModelAndView updateUser(@Valid @ModelAttribute("usersession") User user, BindingResult result,HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
-		if (result.hasErrors()) {
-			 System.out.println("*");
+		HttpSession session = request.getSession();
 
+		int id = (int) session.getAttribute("id");
+
+		user = userService.viewprofile(id);
+		if (result.hasErrors()) {
+			
 			mav.setViewName("editprofile");
 			// form validation error
 			return mav;
 		}
 		userService.saveCustomer(user);
-		mav.setViewName("userpage");
-
+		
+		mav.setViewName("message");
+		String msg="Edited successfully!!";
+		mav.addObject("msg", msg);
+		
 		mav.addObject("usersession", user);
 		return mav;
 

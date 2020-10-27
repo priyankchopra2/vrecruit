@@ -13,6 +13,8 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -42,6 +44,7 @@ public class User {
 	  private String password;
 	  @DateTimeFormat(pattern = "dd/MM/yyyy")
 	  @NotNull(message = "Please enter your dob")
+	  @Temporal(value=TemporalType.DATE)
 
 	  private Date dob;
 	  @NotEmpty(message = "Please enter your email")

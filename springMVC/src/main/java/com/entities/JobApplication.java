@@ -1,14 +1,13 @@
 package com.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 
 @Entity
@@ -22,11 +21,13 @@ public class JobApplication {
 	@Size(min=1,message="Title can't be empty")
 	private String title;
 	
-	private String category;
+	@Enumerated(EnumType.STRING)
+	private JobAppCategory category;
 	
-	private String position_type;
+	@Enumerated(EnumType.STRING)
+	private JobAppPositionType positionType;
 	
-	private String job_description;
+	private String jobDescription;
 	
 	private int rounds;
 	
@@ -49,30 +50,30 @@ public class JobApplication {
 		this.title = title;
 	}
 
-	public String getCategory() {
+	public JobAppCategory getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(JobAppCategory category) {
 		this.category = category;
 	}
 
-	public String getPosition_type() {
-		return position_type;
+	public JobAppPositionType getPositionType() {
+		return positionType;
 	}
 
-	public void setPosition_type(String position_type) {
-		this.position_type = position_type;
+	public void setPositionType(JobAppPositionType positionType) {
+		this.positionType = positionType;
 	}
 
 	
 
-	public String getJob_description() {
-		return job_description;
+	public String getJobDescription() {
+		return jobDescription;
 	}
 
-	public void setJob_description(String job_description) {
-		this.job_description = job_description;
+	public void setJobDescription(String jobDescription) {
+		this.jobDescription = jobDescription;
 	}
 
 	public int getRounds() {
@@ -93,8 +94,8 @@ public class JobApplication {
 
 	@Override
 	public String toString() {
-		return "JobApplication [jid=" + jid + ", title=" + title + ", category=" + category + ", position_type="
-				+ position_type + ", job_description=" + job_description + ", rounds=" + rounds + ", interviewer="
+		return "JobApplication [jid=" + jid + ", title=" + title + ", category=" + category + ", positionType="
+				+ positionType + ", jobDescription=" + jobDescription + ", rounds=" + rounds + ", interviewer="
 				+ interviewer + "]";
 	}
 	

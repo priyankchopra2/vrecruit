@@ -1,27 +1,29 @@
 package com.vrecruit.controllers;
 
-import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,14 +31,23 @@ import org.springframework.web.servlet.ModelAndView;
 import com.dao.InterviewerDAO;
 import com.dao.JobAppDAO;
 import com.dao.JobProcessDao;
-import com.dao.JobProcessDaoImpl;
-import com.entities.Interviewer;
+import com.entities.JobAppCategory;
+import com.entities.JobAppPositionType;
 import com.entities.JobApplication;
 import com.entities.JobProcessDetails;
+import com.pojo.JobApplicationPOJO;
+import com.pojo.JobProcessDetailsPOJO;
 
 @RequestMapping("/jobApp")
 @Controller
 public class JobAppController {
+
+	private static final Logger logger = Logger.getLogger(JobAppController.class);
+
+	private static final String NO_APPLICATION_FOUND = "noApplicationFound";
+	private static final String POSITION_TYPE = "positionType";
+	private static final String JOB_APPLICATION_LIST = "JobApplicationList";
+	private static final String CATEGORIES = "categories";
 
 	@Autowired
 	JobAppDAO jobAppDao;
@@ -51,35 +62,45 @@ public class JobAppController {
 
 	List<JobProcessDetails> jobProcessDetailsList;
 
-	List<String> categories = Arrays.asList("HR", "IT", "FINANCE");
+	List<JobAppCategory> categoriesList = Arrays.asList(JobAppCategory.values());
+	List<JobAppPositionType> positionType = Arrays.asList(JobAppPositionType.values());
 
 	@RequestMapping("/create")
 	public ModelAndView create(ModelAndView m) {
 		m.setViewName("createJobApplication");
 		m.addObject("jobApp", new JobApplication());
-		m.addObject("categories", categories);
+		m.addObject(CATEGORIES, categoriesList);
+		m.addObject(POSITION_TYPE, positionType);
 		return m;
 	}
 
-	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public ModelAndView add(@Valid @ModelAttribute("jobApp") JobApplication jobApp, BindingResult br,
+	@PostMapping(value = "/add")
+	public ModelAndView add(@Valid @ModelAttribute("jobApp") JobApplicationPOJO jobAppPojo, BindingResult br,
 			HttpServletRequest request) {
 		ModelAndView m = new ModelAndView();
 		HttpSession session = request.getSession();
+
+		JobApplication jobApp = new JobApplication();
+		BeanUtils.copyProperties(jobAppPojo, jobApp);
+
+		logger.info(jobApp + "JOB APP POJO---------------------" + jobAppPojo);
+
 		int id = (Integer) session.getAttribute("interviewerId");
-		System.out.println(categories.contains(jobApp.getCategory()));
-		if (br.hasErrors() || ! categories.contains(jobApp.getCategory())) {
-			if(!categories.contains(jobApp.getCategory())) {
-				m.addObject("CategoryError", "Category not Selected"); 
+		logger.info(categoriesList.contains(jobApp.getCategory()));
+		if (br.hasErrors() || !categoriesList.contains(jobApp.getCategory())) {
+
+			if (!categoriesList.contains(jobApp.getCategory())) {
+				m.addObject("CategoryError", "Category not Selected");
 			}
-			System.out.println(br.toString());
-			m.addObject("categories", categories);
-			
+			logger.info(br.toString());
+			m.addObject(CATEGORIES, categoriesList);
+			m.addObject(POSITION_TYPE, positionType);
 			m.setViewName("createJobApplication");
 		} else {
+
 			jobApp.setInterviewer(interviewerDao.findById(id));
 
-			m.setViewName("JobApplicationList");
+			m.setViewName(JOB_APPLICATION_LIST);
 			// Setting object from form to db
 			jobAppDao.save(jobApp);
 
@@ -93,11 +114,11 @@ public class JobAppController {
 	}
 
 	// This will get and display all the data of job applications which are there
-	@RequestMapping(value = "/viewAll", method = RequestMethod.GET)
+	@GetMapping(value = "/viewAll")
 	public ModelAndView show() {
 		ModelAndView m = new ModelAndView();
 
-		m.setViewName("JobApplicationList");
+		m.setViewName(JOB_APPLICATION_LIST);
 
 //    	Getting list of interviewer from database
 		lst = jobAppDao.getAll();
@@ -108,16 +129,16 @@ public class JobAppController {
 	}
 
 	// This will get and display all the data of job applications which are there
-	@RequestMapping(value = "/view", method = RequestMethod.GET)
+	@GetMapping(value = "/view")
 	public ModelAndView show(HttpServletRequest request) {
 		ModelAndView m = new ModelAndView();
 
-		m.setViewName("JobApplicationList");
+		m.setViewName(JOB_APPLICATION_LIST);
 
 		HttpSession session = request.getSession();
 
 		int id = (int) session.getAttribute("interviewerId");
-		System.out.println("id get while fetching for list of JA:  " + id);
+		logger.info("id get while fetching for list of JA:  " + id);
 //    	Getting list of interviewer from database
 		lst = jobAppDao.findByInterviewerId(id);
 
@@ -126,9 +147,9 @@ public class JobAppController {
 		return m;
 	}
 
-	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	@GetMapping(value = "/edit")
 	public ModelAndView edit(@RequestParam("id") int id) {
-//		System.out.println("This is the id which im getting "+id);
+
 		ModelAndView m = new ModelAndView();
 		JobApplication job = new JobApplication();
 		for (JobApplication i : lst) {
@@ -136,32 +157,42 @@ public class JobAppController {
 				job = i;
 			}
 		}
-		m.addObject("categories", categories);
+		m.addObject(CATEGORIES, categoriesList);
+		m.addObject(POSITION_TYPE, positionType);
 		m.setViewName("EditJobApp");
 		m.addObject("jobApp", job);
 		return m;
 	}
 
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public ModelAndView update(@ModelAttribute("jobApp") JobApplication job, BindingResult bindingResult) {
+	@PostMapping(value = "/update")
+	public ModelAndView update(@ModelAttribute("jobApp") JobApplicationPOJO jobPojo, BindingResult bindingResult) {
 		ModelAndView m = new ModelAndView();
 
-		m.setViewName("JobApplicationList");
-		System.out.println(job);
+		JobApplication jobApp = new JobApplication();
+		BeanUtils.copyProperties(jobPojo, jobApp);
+
+
+		m.setViewName(JOB_APPLICATION_LIST);
+		logger.info("UPDATINGGG-----" + jobApp + "jobpojo-----" + jobPojo);
 		// update function will return the updated list
-		lst = jobAppDao.update(job);
+		lst = jobAppDao.update(jobApp);
 
 		m.addObject("lst", lst);
 
 		return m;
 	}
 
-	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public ModelAndView delete(@RequestParam("id") int id) {
+	@GetMapping(value = "/delete")
+	public ModelAndView delete(@RequestParam("id") int id){
 		ModelAndView m = new ModelAndView();
-		m.setViewName("JobApplicationList");
+		m.setViewName(JOB_APPLICATION_LIST);
+		jobProcessDetailsList = jobProcessDaoImpl.getCandidatesJobProcess(id);
 		for (JobApplication i : lst) {
 			if (i.getJid() == id) {
+				if (jobProcessDetailsList.stream().anyMatch(j -> j.getJobApplication().getJid() == id)) {
+					throw new DataIntegrityViolationException(
+							"Candidates Have already Applied ...you can edit but..Can't Delete ");
+				}
 				jobAppDao.delete(i);
 				break;
 			}
@@ -171,8 +202,17 @@ public class JobAppController {
 		return m;
 	}
 
+	@ExceptionHandler({ DataIntegrityViolationException.class })
+	public ModelAndView handleIOException(Exception ex) {
+		ModelAndView model = new ModelAndView("jobAppDeleteError");
+
+		model.addObject("exception", ex.getMessage());
+
+		return model;
+	}
+
 //	CANDIDATE PART
-	@RequestMapping(value = "/candidateJobAppList", method = RequestMethod.GET)
+	@GetMapping(value = "/candidateJobAppList")
 	public ModelAndView candidateJobAppList() {
 		ModelAndView m = new ModelAndView();
 
@@ -195,8 +235,13 @@ public class JobAppController {
 		m.setViewName("candidatesList");
 		jobProcessDetailsList = jobProcessDaoImpl.getCandidatesJobProcess(id);
 
-		m.addObject("jobAppName", jobProcessDetailsList.get(0).getJobApplication().getTitle());
-		m.addObject("lst", jobProcessDetailsList);
+		if (jobProcessDetailsList.isEmpty()) {
+			m.addObject(NO_APPLICATION_FOUND, true);
+		} else {
+			m.addObject(NO_APPLICATION_FOUND, false);
+			m.addObject("jobAppName", jobProcessDetailsList.get(0).getJobApplication().getTitle());
+			m.addObject("lst", jobProcessDetailsList);
+		}
 
 		return m;
 	}
@@ -207,49 +252,56 @@ public class JobAppController {
 
 		m.setViewName("SingleCandidateDetails");
 
-		JobProcessDetails CandidateJobProcessDetails = null;
+		JobProcessDetails candidateJobProcessDetails = new JobProcessDetails();
 
 		for (JobProcessDetails j : jobProcessDetailsList) {
 			if (j.getJobid() == id) {
-				CandidateJobProcessDetails = j;
+				candidateJobProcessDetails = j;
 			}
 		}
 
-		m.addObject("candidateDetails", CandidateJobProcessDetails);
+		m.addObject("candidateDetails", candidateJobProcessDetails);
 		return m;
 	}
-	
-	@RequestMapping(value = "/updateCandidateJobProcess")
-	public ModelAndView updateCandidateJobProcess(@ModelAttribute("candidateDetails") JobProcessDetails candidateDetails, BindingResult bindingResult) {
-		ModelAndView m = new ModelAndView();
 
+	@RequestMapping(value = "/updateCandidateJobProcess")
+	public ModelAndView updateCandidateJobProcess(
+			@ModelAttribute("candidateDetails") JobProcessDetailsPOJO candidateDetailsPojo,
+			BindingResult bindingResult) {
+		ModelAndView m = new ModelAndView();
+		m.addObject(NO_APPLICATION_FOUND, false);
 		m.setViewName("candidatesList");
-		System.out.println(candidateDetails);
-		
-		
-		candidateDetails.setResume(jobProcessDaoImpl.findById(candidateDetails.getJobid()).getResume());
-		
+
+		JobProcessDetails candidateDetails = new JobProcessDetails();
+		BeanUtils.copyProperties(candidateDetailsPojo, candidateDetails);
+
+		logger.info(candidateDetails);
+
+		JobProcessDetails oldJobProcess = jobProcessDaoImpl.findById(candidateDetails.getJobid());
+		candidateDetails.setResume(oldJobProcess.getResume());
+		candidateDetails.setUser(oldJobProcess.getUser());
+		candidateDetails.setJobApplication(oldJobProcess.getJobApplication());
+
 		// update function will return the updated list
 		jobProcessDetailsList = jobProcessDaoImpl.update(candidateDetails);
-		
+		logger.info(candidateDetails);
 		m.addObject("lst", jobProcessDetailsList);
 
 		return m;
 	}
-	
 
 	@RequestMapping(value = "/download/{id}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable("id") int id, HttpServletRequest request) {
-		JobProcessDetails CandidateJobProcessDetails = null;
+		JobProcessDetails candidateJobProcessDetails = new JobProcessDetails();
 
 		for (JobProcessDetails j : jobProcessDetailsList) {
 			if (j.getJobid() == id) {
-				CandidateJobProcessDetails = j;
+				candidateJobProcessDetails = j;
 			}
 		}
-		
-	 	CommonsMultipartFile resume= CandidateJobProcessDetails.getResume();
-		
+
+		CommonsMultipartFile resume = candidateJobProcessDetails.getResume();
+
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(resume.getContentType()))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + resume.getOriginalFilename())
 				.body(new ByteArrayResource(resume.getBytes()));
@@ -257,4 +309,3 @@ public class JobAppController {
 	}
 
 }
-//org.springframework.beans.factory.CannotLoadBeanClassException: Error loading class [org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] for bean with name 'myBeansValidator' defined in ServletContext resource [/WEB-INF/frontController-servlet.xml]: problem with class file or dependent class; nested exception is java.lang.NoClassDefFoundError: javax/validation/ValidatorFactory
